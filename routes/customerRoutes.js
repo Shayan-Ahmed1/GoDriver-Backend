@@ -1,26 +1,26 @@
 const express = require("express");
 const {
-  getUsers,
-  getUser,
-  createUser,
-  deleteUser,
-  updateUser,
+  getCustomers,
+  getCustomer,
+  createCustomer,
+  deleteCustomer,
+  updateCustomer,
 } = require("../controllers/customerController");
 const router = express.Router();
 
-// Retreive all users record
-router.get("/", getUsers);
+// Retreive all Customers record
+router.get("/", getCustomers);
 
-// Retreive a single user record
-router.get("/:id", getUser);
+// Retreive a single Customer record
+router.get("/:id", getCustomer);
 
-// Create a new user record
-router.post("/", createUser);
+// Create a new Customer record
+router.post("/", createCustomer);
 
-// DELETE an existing user record
-router.delete("/:id", deleteUser);
+// DELETE an existing Customer record
+router.delete("/:id", deleteCustomer);
 
-// Update an existing user record
-router.patch("/:id", updateUser);
+// Update an existing Customer record
+router.patch("/:id", updateCustomer);
 
 module.exports = router;

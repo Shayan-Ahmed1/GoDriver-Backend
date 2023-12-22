@@ -1,91 +1,91 @@
-const User = require("../models/customerModel");
+const Customer = require("../models/customerModel");
 const mongoose = require("mongoose");
 
-// Retreive all users record
-const getUsers = async (req, res) => {
-  const users = await User.find({}).sort({ createdAt: -1 });
+// Retreive all Customers record
+const getCustomers = async (req, res) => {
+  const customers = await Customer.find({}).sort({ createdAt: -1 });
 
-  res.status(200).json(users);
+  res.status(200).json(customers);
 };
 
-// Retreive a single user record
-const getUser = async (req, res) => {
+// Retreive a single Customer record
+const getCustomer = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(404).json({ error: "No such user" });
+    res.status(404).json({ error: "No such Customer" });
   }
 
-  const user = await User.findById(id);
+  const customers = await Customer.findById(id);
 
-  if (!user) {
-    res.status(404).json({ error: "No such user" });
+  if (!customers) {
+    res.status(404).json({ error: "No such Customer" });
   }
 
-  res.status(200).json(user);
+  res.status(200).json(customers);
 };
 
-// Create a new user record
-const createUser = async (req, res) => {
+// Create a new Customer record
+const createCustomer = async (req, res) => {
   const { name, email, password, phone_no, address } = req.body;
 
   try {
-    const user = await User.create({
+    const customers = await Customer.create({
       name,
       email,
       password,
       phone_no,
       address,
     });
-    res.status(200).json(user);
+    res.status(200).json(customers);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-// DELETE an existing user record
-const deleteUser = async (req, res) => {
+// DELETE an existing Customer record
+const deleteCustomer = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(404).json({ error: "No such user" });
+    res.status(404).json({ error: "No such Customer" });
   }
 
-  const user = await User.findOneAndDelete({ _id: id });
+  const customers = await Customer.findOneAndDelete({ _id: id });
 
-  if (!user) {
-    res.status(404).json({ error: "No such user" });
+  if (!customers) {
+    res.status(404).json({ error: "No such Customer" });
   }
 
-  res.status(200).json(user);
+  res.status(200).json(customers);
 };
 
-// Update an existing user record
-const updateUser = async (req, res) => {
+// Update an existing Customer record
+const updateCustomer = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(404).json({ error: "No such user" });
+    res.status(404).json({ error: "No such Customer" });
   }
 
-  const user = await User.findOneAndUpdate(
+  const customers = await Customer.findOneAndUpdate(
     { _id: id },
     {
       ...req.body,
     }
   );
 
-  if (!user) {
-    res.status(404).json({ error: "No such user" });
+  if (!customers) {
+    res.status(404).json({ error: "No such Customer" });
   }
 
-  res.status(200).json(user);
+  res.status(200).json(customers);
 };
 
 module.exports = {
-  getUsers,
-  getUser,
-  createUser,
-  deleteUser,
-  updateUser,
+  getCustomers,
+  getCustomer,
+  createCustomer,
+  deleteCustomer,
+  updateCustomer,
 };
