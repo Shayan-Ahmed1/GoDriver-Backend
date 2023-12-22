@@ -2,38 +2,30 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const carSchema = new Schema(
+const userSchema = new Schema(
   {
-    make: {
+    name: {
       type: String,
       required: true,
     },
-    model: {
+    email: {
       type: String,
       required: true,
     },
-    year: {
+    password: {
+      type: String,
+      required: true,
+    },
+    phone_no: {
       type: Number,
       required: true,
     },
-    color: {
+    address: {
       type: String,
-      required: true,
-    },
-    registration_number: {
-      type: String,
-      required: true,
-    },
-    rental_price_per_day: {
-      type: Number,
-      required: true,
-    },
-    rental_status: {
-      type: Boolean,
       required: true,
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Car", carSchema);
+module.exports = mongoose.model("User", userSchema);
