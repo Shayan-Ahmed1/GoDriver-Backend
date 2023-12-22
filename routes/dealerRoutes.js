@@ -5,6 +5,8 @@ const {
   loginDealer,
   currentDealer,
 } = require("../controllers/dealerController");
+const validateToken = require("../middleware/validateTokenHandler");
+
 const router = express.Router();
 
 // Retreive all Dealers record
@@ -17,6 +19,6 @@ router.route("/register").post(registerDealer);
 router.route("/login").post(loginDealer);
 
 //Current Dealer Status
-router.route("/current").post(currentDealer);
+router.route("/current").get(validateToken, currentDealer);
 
 module.exports = router;

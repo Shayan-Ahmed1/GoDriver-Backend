@@ -20,18 +20,6 @@ const driverSchema = new Schema(
       type: String,
       required: true,
     },
-    age: {
-      type: Number,
-      required: true,
-    },
-    address: {
-      type: String,
-      required: true,
-    },
-    transmission: {
-      type: String,
-      required: true,
-    },
   },
   { timestamps: true }
 );

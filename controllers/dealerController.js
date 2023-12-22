@@ -1,51 +1,91 @@
+const asyncHandler = require("express-async-handler");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const Dealer = require("../models/dealerModel");
-const mongoose = require("mongoose");
 
-// Retreive all Dealers record
+// Retreive all Dealers
 const getDealers = async (req, res) => {
   const dealers = await Dealer.find({}).sort({ createdAt: -1 });
-
   res.status(200).json(dealers);
 };
 
-// Register Dealer
-const registerDealer = async (req, res) => {
+//@desc Register a Dealer
+//@route POST api/dealers/register
+//@access public
+const registerDealer = asyncHandler(async (req, res) => {
   const { name, email, password, phone_no } = req.body;
 
-  try {
-    const dealers = await Dealer.create({
-      name,
-      email,
-      password,
-      phone_no,
-    });
-    res.status(200).json(dealers);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+  if (!name || !email || !password || !phone_no) {
+    res.status(400);
+    throw new Error("All fields are mandatory");
   }
-};
 
-// login Dealer
-const loginDealer = async (req, res) => {
+  const dealerAvailabe = await Dealer.findOne({ email });
+
+  if (dealerAvailabe) {
+    res.status(400);
+    throw new Error("Dealer already registered!");
+  }
+
+  // Hash Password
+  const hashPassword = await bcrypt.hash(password, 10);
+
+  const dealer = await Dealer.create({
+    name,
+    email,
+    password: hashPassword,
+    phone_no,
+  });
+
+  if (dealer) {
+    res
+      .status(201)
+      .json({ _id: dealer.id, name: dealer.name, email: dealer.email });
+  } else {
+    res.status(400);
+    throw new Error("Dealer data is not valid");
+  }
+
+  res.json({ message: "Dealer Registered" });
+});
+
+//@desc login Dealer
+//@route POST api/dealers/login
+//@access public
+const loginDealer = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  try {
-    const dealers = await Dealer.create({
-      email,
-      password,
-    });
-    res.status(200).json(dealers);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+  if (!email || !password) {
+    res.status(400);
+    throw new Error("All fields are mandatory");
   }
-};
+  const dealer = await Dealer.findOne({ email });
 
-// Current Dealer Status
-const currentDealer = async (req, res) => {
-  const dealers = await Dealer.find({}).sort({ createdAt: -1 });
+  // Compare password and hashPassword
+  if (dealer && bcrypt.compare(password, dealer.password)) {
+    const accessToken = jwt.sign(
+      {
+        dealer: {
+          email: dealer.email,
+          id: dealer.id,
+        },
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "20m" }
+    );
+    res.status(200).json({ accessToken });
+  } else {
+    res.status(401);
+    throw new Error("Credentials are invalid");
+  }
+});
 
-  res.status(200).json(dealers);
-};
+//@desc Current Dealer Indo
+//@route GET api/dealers/register
+//@access public
+const currentDealer = asyncHandler(async (req, res) => {
+  res.json(req.dealer);
+});
 
 module.exports = {
   getDealers,

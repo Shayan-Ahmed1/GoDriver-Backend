@@ -30,7 +30,6 @@ mongoose
       console.log(
         `DB Connection Established & Server running on http://localhost:${PORT}`
       );
-      console.log("Dev Branch");
     });
   })
   .catch((error) => {

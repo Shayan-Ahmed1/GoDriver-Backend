@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const getDrivers = async (req, res) => {
   const drivers = await Driver.find({}).sort({ createdAt: -1 });
 
-  res.status(200).json(drivers);
+  res.status(200).json(drivers); 
 };
 
 // Retreive a single driver record
