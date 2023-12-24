@@ -13,18 +13,18 @@ const router = express.Router();
 router.use(validateToken);
 
 // Retreive all cars record
-router.get("/", getCars);
-
-// Retreive a single car record
-router.get("/:id", getCar);
+router.route("/").get(getCars);
 
 // Create a new car record
-router.post("/", createCar);
+router.route("/").post(createCar);
 
-// DELETE an existing car record
-router.delete("/:id", deleteCar);
+// Retreive a single car record
+router.route("/:id").get(getCar);
 
 // Update an existing car record
-router.patch("/:id", updateCar);
+router.route("/:id").put(updateCar);
+
+// DELETE an existing car record
+router.route("/:id").delete(deleteCar);
 
 module.exports = router;

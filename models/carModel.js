@@ -21,10 +21,6 @@ const carSchema = new Schema(
       type: Number,
       required: true,
     },
-    color: {
-      type: String,
-      required: true,
-    },
     registration_number: {
       type: String,
       required: true,
@@ -33,10 +29,10 @@ const carSchema = new Schema(
       type: Number,
       required: true,
     },
-    rental_status: {
-      type: Boolean,
-      required: true,
-    },
+    // rental_status: {
+    //   type: Boolean,
+    //   required: true,
+    // },
   },
   { timestamps: true }
 );

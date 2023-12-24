@@ -17,9 +17,9 @@ const getDrivers = asyncHandler(async (req, res) => {
 //@route POST /api/driver
 //access private
 const createDriver = asyncHandler(async (req, res) => {
-  const { name, email, phone_no, license_no, address } = req.body;
+  const { name, email, phone_no, license_no, address, available } = req.body;
 
-  if (!name || !email || !phone_no || !license_no || !address) {
+  if (!name || !email || !phone_no || !license_no || !address || !available) {
     res.status(400);
     throw new Error("All fields are required!");
   }
@@ -30,9 +30,8 @@ const createDriver = asyncHandler(async (req, res) => {
       email,
       phone_no,
       license_no,
-      age,
       address,
-      transmission,
+      available,
       dealer_id: req.dealer.id,
     });
     res.status(200).json(driver);

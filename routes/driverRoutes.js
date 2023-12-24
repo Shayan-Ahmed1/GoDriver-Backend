@@ -12,18 +12,18 @@ const router = express.Router();
 router.use(validateToken);
 
 // Retreive all drivers record
-router.get("/", getDrivers);
+router.route("/").get(getDrivers);
 
 // Retreive a single driver record
-router.get("/:id", getDriver);
+router.route("/:id").get(getDriver);
 
 // Create a new driver record
-router.post("/", createDriver);
+router.route("/").post(createDriver);
 
 // DELETE an existing driver record
-router.delete("/:id", deleteDriver);
+router.route("/:id").delete(deleteDriver);
 
 // Update an existing driver record
-router.patch("/:id", updateDriver);
+router.route("/:id").put(updateDriver);
 
 module.exports = router;

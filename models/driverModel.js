@@ -25,6 +25,14 @@ const driverSchema = new Schema(
       type: String,
       required: true,
     },
+    address: {
+      type: String,
+      required: true,
+    },
+    available: {
+      type: Boolean,
+      required: true,
+    },
   },
   { timestamps: true }
 );

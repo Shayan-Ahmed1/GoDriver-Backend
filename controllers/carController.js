@@ -20,7 +20,6 @@ const createCar = asyncHandler(async (req, res) => {
     make,
     model,
     year,
-    color,
     registration_number,
     rental_price_per_day,
     rental_status,
@@ -30,12 +29,11 @@ const createCar = asyncHandler(async (req, res) => {
     !make ||
     !model ||
     !year ||
-    !color ||
     !registration_number ||
     !rental_price_per_day ||
-    rental_status
+    !rental_status
   ) {
-    res.status(400);
+    res.status(404);
     throw new Error("All fields are required!");
   }
 
@@ -48,7 +46,6 @@ const createCar = asyncHandler(async (req, res) => {
       make,
       model,
       year,
-      color,
       registration_number,
       rental_price_per_day,
       rental_status,
@@ -72,9 +69,9 @@ const getCar = asyncHandler(async (req, res) => {
 
   const car = await Car.findById(id);
 
-  if (!expense) {
+  if (!car) {
     res.status(404);
-    throw new Error("Expense not found");
+    throw new Error("Car not found");
   }
 
   res.status(200).json(car);
