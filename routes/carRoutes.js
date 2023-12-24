@@ -1,13 +1,16 @@
 const express = require("express");
 const {
-  createCar,
   getCars,
   getCar,
+  createCar,
   deleteCar,
   updateCar,
 } = require("../controllers/carController");
+const validateToken = require("../middleware/validateTokenHandler");
 
 const router = express.Router();
+
+router.use(validateToken);
 
 // Retreive all cars record
 router.get("/", getCars);
