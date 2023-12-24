@@ -6,6 +6,7 @@ const carRoutes = require("./routes/carRoutes");
 const driverRoutes = require("./routes/driverRoutes");
 const customerRoutes = require("./routes/customerRoutes");
 const dealerRoutes = require("./routes/dealerRoutes");
+const errorHandler = require("./middleware/errorHandler");
 
 PORT = process.env.PORT;
 
@@ -20,6 +21,7 @@ app.use("/api/cars", carRoutes);
 app.use("/api/drivers", driverRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/dealers", dealerRoutes);
+app.use(errorHandler);
 
 // Connection to Mongo DB
 mongoose
