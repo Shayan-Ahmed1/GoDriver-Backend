@@ -6,17 +6,13 @@ const Car = require("../models/carModel");
 //@route GET /api/cars
 //@access private
 const getCars = asyncHandler(async (req, res) => {
-  try {
-    const cars = await Car.find({ dealer_id: req.dealer.id }).sort({
-      createdAt: -1,
-    });
-    res.status(200).json(cars);
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
+  const cars = await Car.find({ dealer_id: req.dealer.id }).sort({
+    createdAt: -1,
+  });
+  res.status(200).json(cars);
 });
 
-//@desc Create a new car
+//@desc Create a new Car
 //@route POST /api/cars
 //access private
 const createCar = asyncHandler(async (req, res) => {
@@ -31,13 +27,13 @@ const createCar = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
-    (!make ||
-      !model ||
-      !year ||
-      !color ||
-      !registration_number ||
-      !rental_price_per_day,
-    rental_status)
+    !make ||
+    !model ||
+    !year ||
+    !color ||
+    !registration_number ||
+    !rental_price_per_day ||
+    rental_status
   ) {
     res.status(400);
     throw new Error("All fields are required!");
@@ -46,6 +42,7 @@ const createCar = asyncHandler(async (req, res) => {
   if (rental_price_per_day <= 0 || !rental_price_per_day === "number") {
     return res.status(400).json({ error: "Rent must be a positive number" });
   }
+
   try {
     const car = await Car.create({
       make,
@@ -127,7 +124,7 @@ const deleteCar = asyncHandler(async (req, res) => {
   const car = await Car.findByIdAndDelete(id, { returnDocument: "after" });
 
   if (!car) {
-    return res.status(404);
+    res.status(404);
     throw new Error("Car not found");
   }
 

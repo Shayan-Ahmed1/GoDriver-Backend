@@ -1,34 +1,28 @@
-const Driver = require("../models/driverModel");
+const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
+const Driver = require("../models/driverModel");
 
-// Retreive all drivers record
-const getDrivers = async (req, res) => {
-  const drivers = await Driver.find({}).sort({ createdAt: -1 });
+//@desc Retrieve all Drivers
+//@route GET /api/driver
+//@access private
+const getDrivers = asyncHandler(async (req, res) => {
+  const drivers = await Driver.find({ dealer_id: req.dealer.id }).sort({
+    createdAt: -1,
+  });
 
-  res.status(200).json(drivers); 
-};
+  res.status(200).json(drivers);
+});
 
-// Retreive a single driver record
-const getDriver = async (req, res) => {
-  const { id } = req.params;
+//@desc Create a new Driver
+//@route POST /api/driver
+//access private
+const createDriver = asyncHandler(async (req, res) => {
+  const { name, email, phone_no, license_no, address } = req.body;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(404).json({ error: "No such driver" });
+  if (!name || !email || !phone_no || !license_no || !address) {
+    res.status(400);
+    throw new Error("All fields are required!");
   }
-
-  const driver = await Driver.findById(id);
-
-  if (!driver) {
-    res.status(404).json({ error: "No such driver" });
-  }
-
-  res.status(200).json(driver);
-};
-
-// Create a new driver record
-const createDriver = async (req, res) => {
-  const { name, email, phone_no, license_no, age, address, transmission } =
-    req.body;
 
   try {
     const driver = await Driver.create({
@@ -39,51 +33,88 @@ const createDriver = async (req, res) => {
       age,
       address,
       transmission,
+      dealer_id: req.dealer.id,
     });
     res.status(200).json(driver);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
-};
+});
 
-// DELETE an existing driver record
-const deleteDriver = async (req, res) => {
+//@desc Retrieve a single Driver
+//@route GET /api/drivers/:id
+//@access private
+const getDriver = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res.status(404).json({ error: "No such driver" });
   }
 
-  const driver = await Driver.findOneAndDelete({ _id: id });
+  const driver = await Driver.findById(id);
 
   if (!driver) {
-    res.status(404).json({ error: "No such driver" });
+    res.status(404);
+    throw new Error("Expense not found");
   }
 
   res.status(200).json(driver);
-};
+});
 
-// Update an existing car record
-const updateDriver = async (req, res) => {
+//@desc Update an existing Driver
+//@route PUT /api/drivers/:id
+//@access private
+const updateDriver = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res.status(404).json({ error: "No such driver" });
   }
 
-  const driver = await Driver.findOneAndUpdate(
-    { _id: id },
-    {
-      ...req.body,
-    }
+  const driver = await Driver.findById(id);
+
+  if (!driver) {
+    res.status(404);
+    throw new Error("Car not found");
+  }
+
+  if (driver.dealer_id.toString() !== req.dealer.id) {
+    req.status(403);
+    throw new Error(
+      "Dealer don't have permission to update other dealer drivers"
+    );
+  }
+
+  const updatedDriver = await Driver.findByIdAndUpdate(
+    id,
+    { ...req.body },
+    { returnDocument: "after" }
   );
 
-  if (!driver) {
+  res.status(200).json(updatedDriver);
+});
+
+//@desc Delete an existing Driver
+//@route DELETE /api/drivers/:id
+//@access private
+const deleteDriver = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     res.status(404).json({ error: "No such driver" });
   }
 
+  const driver = await Driver.findByIdAndDelete(id, {
+    returnDocument: "after",
+  });
+
+  if (!driver) {
+    res.status(404);
+    throw new Error("Driver not found");
+  }
+
   res.status(200).json(driver);
-};
+});
 
 module.exports = {
   getDrivers,

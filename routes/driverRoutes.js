@@ -6,7 +6,10 @@ const {
   deleteDriver,
   updateDriver,
 } = require("../controllers/driverController");
+const validateToken = require("../middleware/validateTokenHandler");
 const router = express.Router();
+
+router.use(validateToken);
 
 // Retreive all drivers record
 router.get("/", getDrivers);

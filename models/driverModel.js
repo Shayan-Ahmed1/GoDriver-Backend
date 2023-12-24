@@ -4,6 +4,11 @@ const Schema = mongoose.Schema;
 
 const driverSchema = new Schema(
   {
+    dealer_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Dealer",
+    },
     name: {
       type: String,
       required: true,
