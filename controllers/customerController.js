@@ -1,91 +1,95 @@
+const asyncHandler = require("express-async-handler");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const Customer = require("../models/customerModel");
-const mongoose = require("mongoose");
 
-// Retreive all Customers record
+// Retreive all Customers
 const getCustomers = async (req, res) => {
   const customers = await Customer.find({}).sort({ createdAt: -1 });
-
   res.status(200).json(customers);
 };
 
-// Retreive a single Customer record
-const getCustomer = async (req, res) => {
-  const { id } = req.params;
+//@desc Register a Customer
+//@route POST api/customers/register
+//@access public
+const registerCustomer = asyncHandler(async (req, res) => {
+  const { name, email, password, phone_no } = req.body;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(404).json({ error: "No such Customer" });
+  if (!name || !email || !password || !phone_no) {
+    res.status(400);
+    throw new Error("All fields are mandatory");
   }
 
-  const customers = await Customer.findById(id);
+  const customerAvailabe = await Customer.findOne({ email });
 
-  if (!customers) {
-    res.status(404).json({ error: "No such Customer" });
+  if (customerAvailabe) {
+    res.status(400);
+    throw new Error("Customer already registered!");
   }
 
-  res.status(200).json(customers);
-};
+  // Hash Password
+  const hashPassword = await bcrypt.hash(password, 10);
 
-// Create a new Customer record
-const createCustomer = async (req, res) => {
-  const { name, email, password, phone_no, address } = req.body;
+  const customer = await Customer.create({
+    name,
+    email,
+    password: hashPassword,
+    phone_no,
+  });
 
-  try {
-    const customers = await Customer.create({
-      name,
-      email,
-      password,
-      phone_no,
-      address,
-    });
-    res.status(200).json(customers);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-// DELETE an existing Customer record
-const deleteCustomer = async (req, res) => {
-  const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(404).json({ error: "No such Customer" });
+  if (customer) {
+    res
+      .status(201)
+      .json({ _id: customer.id, name: customer.name, email: customer.email });
+  } else {
+    res.status(400);
+    throw new Error("Customer data is not valid");
   }
 
-  const customers = await Customer.findOneAndDelete({ _id: id });
+  res.json({ message: "Customer Registered" });
+});
 
-  if (!customers) {
-    res.status(404).json({ error: "No such Customer" });
+//@desc login Customer
+//@route POST api/customers/login
+//@access public
+const loginCustomer = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400);
+    throw new Error("All fields are mandatory");
   }
+  const customer = await Customer.findOne({ email });
 
-  res.status(200).json(customers);
-};
-
-// Update an existing Customer record
-const updateCustomer = async (req, res) => {
-  const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(404).json({ error: "No such Customer" });
+  // Compare password and hashPassword
+  if (customer && bcrypt.compare(password, customer.password)) {
+    const accessToken = jwt.sign(
+      {
+        customer: {
+          email: customer.email,
+          id: customer.id,
+        },
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "60m" }
+    );
+    res.status(200).json({ accessToken });
+  } else {
+    res.status(401);
+    throw new Error("Credentials are invalid");
   }
+});
 
-  const customers = await Customer.findOneAndUpdate(
-    { _id: id },
-    {
-      ...req.body,
-    }
-  );
-
-  if (!customers) {
-    res.status(404).json({ error: "No such Customer" });
-  }
-
-  res.status(200).json(customers);
-};
+//@desc Current Customer Indo
+//@route GET api/customers/register
+//@access public
+const currentCustomer = asyncHandler(async (req, res) => {
+  res.json(req.user);
+});
 
 module.exports = {
   getCustomers,
-  getCustomer,
-  createCustomer,
-  deleteCustomer,
-  updateCustomer,
+  registerCustomer,
+  loginCustomer,
+  currentCustomer,
 };

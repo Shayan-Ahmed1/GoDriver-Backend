@@ -29,6 +29,22 @@ const carSchema = new Schema(
       type: Number,
       required: true,
     },
+    seats: {
+      type: Number,
+      required: true,
+    },
+    transmission: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
     // rental_status: {
     //   type: Boolean,
     //   required: true,

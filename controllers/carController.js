@@ -6,7 +6,7 @@ const Car = require("../models/carModel");
 //@route GET /api/cars
 //@access private
 const getCars = asyncHandler(async (req, res) => {
-  const cars = await Car.find({ dealer_id: req.dealer.id }).sort({
+  const cars = await Car.find({ dealer_id: req.user.id }).sort({
     createdAt: -1,
   });
   res.status(200).json(cars);
@@ -22,7 +22,11 @@ const createCar = asyncHandler(async (req, res) => {
     year,
     registration_number,
     rental_price_per_day,
-    rental_status,
+    seats,
+    transmission,
+    date,
+    image,
+    // rental_status,
   } = req.body;
 
   if (
@@ -31,7 +35,11 @@ const createCar = asyncHandler(async (req, res) => {
     !year ||
     !registration_number ||
     !rental_price_per_day ||
-    !rental_status
+    !seats ||
+    !transmission ||
+    !image ||
+    !date
+    // !rental_status
   ) {
     res.status(404);
     throw new Error("All fields are required!");
@@ -48,9 +56,14 @@ const createCar = asyncHandler(async (req, res) => {
       year,
       registration_number,
       rental_price_per_day,
-      rental_status,
-      dealer_id: req.dealer.id,
+      seats,
+      transmission,
+      date,
+      image,
+      // rental_status,
+      dealer_id: req.user.id,
     });
+    console.log(car);
     res.status(200).json(car);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -94,7 +107,7 @@ const updateCar = asyncHandler(async (req, res) => {
     throw new Error("Car not found");
   }
 
-  if (car.dealer_id.toString() !== req.dealer.id) {
+  if (car.dealer_id.toString() !== req.user.id) {
     req.status(403);
     throw new Error("Dealer don't have permission to update other dealer cars");
   }

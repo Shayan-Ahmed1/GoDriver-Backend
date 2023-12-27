@@ -6,7 +6,7 @@ const Driver = require("../models/driverModel");
 //@route GET /api/driver
 //@access private
 const getDrivers = asyncHandler(async (req, res) => {
-  const drivers = await Driver.find({ dealer_id: req.dealer.id }).sort({
+  const drivers = await Driver.find({ dealer_id: req.user.id }).sort({
     createdAt: -1,
   });
 
@@ -32,7 +32,7 @@ const createDriver = asyncHandler(async (req, res) => {
       license_no,
       address,
       available,
-      dealer_id: req.dealer.id,
+      dealer_id: req.user.id,
     });
     res.status(200).json(driver);
   } catch (error) {
@@ -77,7 +77,7 @@ const updateDriver = asyncHandler(async (req, res) => {
     throw new Error("Car not found");
   }
 
-  if (driver.dealer_id.toString() !== req.dealer.id) {
+  if (driver.dealer_id.toString() !== req.user.id) {
     req.status(403);
     throw new Error(
       "Dealer don't have permission to update other dealer drivers"

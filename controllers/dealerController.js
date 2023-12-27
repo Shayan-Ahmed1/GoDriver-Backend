@@ -71,7 +71,7 @@ const loginDealer = asyncHandler(async (req, res) => {
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "20m" }
+      { expiresIn: "60m" }
     );
     res.status(200).json({ accessToken });
   } else {
@@ -84,7 +84,7 @@ const loginDealer = asyncHandler(async (req, res) => {
 //@route GET api/dealers/register
 //@access public
 const currentDealer = asyncHandler(async (req, res) => {
-  res.json(req.dealer);
+  res.json(req.user);
 });
 
 module.exports = {
